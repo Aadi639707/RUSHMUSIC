@@ -1,0 +1,6 @@
+pyrofork
+tgcrypto
+ntgcalls
+git+https://github.com/pytgcalls/pytgcalls.git
+aiohttp
+pyDes
