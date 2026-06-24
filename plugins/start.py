@@ -9,12 +9,13 @@ async def start_command(client: Client, message: Message):
     bot_name = client.me.first_name
     bot_username = client.me.username
     
-    caption_text = (
+        caption_text = (
         f"ʜᴇʏ {message.from_user.mention} , 🥀\n\n"
-        f"⊙ ᴛʜɪs ɪs ˹ {bot_name} ˼ ♪ [ 𝘕ο 𝘈𝘥𝘴 ] ™ !\n\n"
+        f"⊙ ᴛʜɪs ɪs ˹ {bot_name} ˼ !\n\n"
         f"➻ ᴀ ғᴀsᴛ & ᴘᴏᴡᴇʀғᴜʟ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ᴡɪᴛʜ sᴏᴍᴇ ᴀᴡᴇsᴏᴍᴇ ғᴇᴀᴛᴜʀᴇs.\n\n"
         f"⊙ ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴ ᴛᴏ ɢᴇᴛ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ᴀʙᴏᴜᴛ ᴍʏ ᴍᴏᴅᴜʟᴇs ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅs."
-    )
+        )
+
     
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ⁺", url=f"https://t.me/{bot_username}?startgroup=true")],
