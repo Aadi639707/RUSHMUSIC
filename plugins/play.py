@@ -32,22 +32,12 @@ def decrypt_url(encrypted_url):
 
 @Client.on_message(filters.command("play") & filters.group)
 async def play_command(client: Client, message: Message):
-    if len(message.command) < 2: return await message.reply_text("ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴍᴇ ᴀ sᴏɴɢ ɴᴀᴍᴇ.")
+    if len(message.command) < 2: 
+        return await message.reply_text("⚠️ Please provide a song name to play.")
     
     chat_id = message.chat.id
-    
-    # 🤖 Auto VC Management Logic
-    try:
-        await client.get_call(chat_id)
-    except:
-        try:
-            await client.set_group_call_title(chat_id, "🎵 Spotify Music Player")
-            await client.create_group_call(chat_id)
-        except Exception as e:
-            return await message.reply_text("⚠️ VC start karne ke liye mujhe 'Manage Voice Chats' ki permission do!")
-
     query = message.text.split(None, 1)[1]
-    processing_msg = await message.reply_text("sᴇᴀʀᴄʜɪɴɢ ᴅɪʀᴇᴄᴛʟʏ ᴏɴ ᴊɪᴏsᴀᴀᴠɴ...")
+    processing_msg = await message.reply_text("🔍 Searching on JioSaavn...")
 
     try:
         encoded_query = urllib.parse.quote(query)
@@ -84,7 +74,7 @@ async def play_command(client: Client, message: Message):
                     stream_urls_to_try.append(preview_url.replace("preview.saavncdn.com", "aac.saavncdn.com").replace("_96_p", "_320"))
                     stream_urls_to_try.append(preview_url.replace("preview.saavncdn.com", "aac.saavncdn.com"))
 
-            await processing_msg.edit_text(f"⬇️ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ʜᴅ: {title}...")
+            await processing_msg.edit_text(f"⬇️ Downloading Audio: {title}...")
             file_path = f"downloads/{chat_id}_{song_id}.m4a"
             
             if not os.path.exists(file_path):
@@ -103,20 +93,29 @@ async def play_command(client: Client, message: Message):
         bot_username = client.me.username
         play_buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("▷", callback_data="resume"), InlineKeyboardButton("II", callback_data="pause"), InlineKeyboardButton("⏭", callback_data="skip"), InlineKeyboardButton("⏹", callback_data="stop")],
-            [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ ↗", url="https://t.me/rushbots")],
-            [InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ +", url=f"https://t.me/{bot_username}?startgroup=true")]
+            [InlineKeyboardButton("Developer", url="https://t.me/rushdeveloper"), InlineKeyboardButton("Support", url="https://t.me/rushbots")],
+            [InlineKeyboardButton("+ Add Me To Your Group +", url=f"https://t.me/{bot_username}?startgroup=true")]
         ])
 
         if len(music_queue[chat_id]) == 1:
-            await call.play(chat_id, MediaStream(file_path))
-            play_text = f"▶️ <b>sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ</b>\n\nᴛɪᴛʟᴇ : {title}\nᴅᴜʀᴀᴛɪᴏɴ : {duration} sᴇᴄᴏɴᴅs\nʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {song_details['requester']}"
+            try:
+                await call.play(chat_id, MediaStream(file_path))
+            except Exception as vc_err:
+                music_queue.pop(chat_id, None)
+                err_str = str(vc_err).lower()
+                if "not found" in err_str or "no active" in err_str or "not in call" in err_str:
+                    return await processing_msg.edit_text("⚠️ **Error:** Please turn on the Voice Chat in this group before playing a song.")
+                else:
+                    raise vc_err
+
+            play_text = f"▶️ **Started Streaming**\n\n**Title:** {title}\n**Duration:** {duration} Seconds\n**Requested By:** {song_details['requester']}"
             await message.reply_photo(photo=thumbnail, caption=play_text, reply_markup=play_buttons)
             await processing_msg.delete()
         else:
             position = len(music_queue[chat_id]) - 1
-            queue_text = f"ᴀᴅᴅᴇᴅ ᴛᴏ ǫᴜᴇᴜᴇ ᴀᴛ #{position}\n\nᴛɪᴛʟᴇ : {title}\nᴅᴜʀᴀᴛɪᴏɴ : {duration} sᴇᴄᴏɴᴅs\nʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {song_details['requester']}"
+            queue_text = f"⏳ **Added to Queue at #{position}**\n\n**Title:** {title}\n**Duration:** {duration} Seconds\n**Requested By:** {song_details['requester']}"
             await processing_msg.edit_text(text=queue_text, reply_markup=play_buttons)
 
     except Exception as e:
-        await processing_msg.edit_text(f"ᴇʀʀᴏʀ: {str(e)[:100]}")
+        await processing_msg.edit_text(f"⚠️ **System Error:** {str(e)[:100]}")
         
