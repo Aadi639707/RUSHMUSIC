@@ -12,10 +12,12 @@ async def start_bot():
     print("Starting PyTgCalls Engine...")
     await call.start()
     
-    print("✅ Bot is now 24/7 Online and Ready to Play!")
+    print("✅ Bot is now 24/7 Online and Ready to Play! 🚀")
+    
+    # 24/7 Server par alive rakhne ke liye
     await idle()
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(start_bot())
-  
+    
