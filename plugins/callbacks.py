@@ -42,7 +42,7 @@ async def play_next_system(chat_id, is_auto=False):
         play_text = f"⏭ <b>sᴋɪᴘᴘᴇᴅ ᴛᴏ ɴᴇxᴛ ᴛʀᴀᴄᴋ</b>\n\nᴛɪᴛʟᴇ : {next_song['title']}\nᴅᴜʀᴀᴛɪᴏɴ : {next_song['duration']} sᴇᴄᴏɴᴅs\nʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {next_song['requester']}"
         play_buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("▷", callback_data="resume"), InlineKeyboardButton("II", callback_data="pause"), InlineKeyboardButton("⏭", callback_data="skip"), InlineKeyboardButton("⏹", callback_data="stop")],
-            [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ ↗", url="https://t.me/rushbots")],
+            [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("sᴜᴘ force_stop ↗", url="https://t.me/rushbots")],
             [InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ +", url=f"https://t.me/{bot_username}?startgroup=true")]
         ])
         await app.send_photo(chat_id, photo=next_song['thumbnail'], caption=play_text, reply_markup=play_buttons)
@@ -129,11 +129,16 @@ async def help_menu_handler(client: Client, query: CallbackQuery):
 async def close_help_handler(client: Client, query: CallbackQuery):
     bot_name = client.me.first_name
     bot_username = client.me.username
-    caption_text = f"ʜᴇʏ {query.from_user.mention} , 🥀\n\n⊙ ᴛʜɪs ɪs ˹ {bot_name} ˼ ♪ [ 𝘕ο 𝘈𝘥𝘴 ] ™ !\n\n➻ ᴀ ғᴀsᴛ & ᴘᴏᴡᴇʀғᴜʟ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ᴡɪᴛʜ sᴏᴍᴇ ᴀᴡᴇsᴏᴍᴇ ғᴇᴀᴛᴜʀᴇs."
+    caption_text = (
+        f"ʜᴇʏ {query.from_user.mention} , 🥀\n\n"
+        f"⊙ ᴛʜɪs ɪs ˹ {bot_name} ˼ !\n\n"
+        f"➻ ᴀ ғᴀsᴛ & ᴘᴏᴡᴇʀғᴜʟ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ᴡɪᴛʜ sᴏᴍᴇ ᴀᴡᴇsᴏᴍᴇ ғᴇᴀᴛᴜʀᴇs.\n\n"
+        f"⊙ ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴ ᴛᴏ ɢᴇᴛ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ᴀʙᴏᴜᴛ ᴍʏ ᴍᴏᴅᴜʟᴇs ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅs."
+    )
     Buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ⁺", url=f"https://t.me/{bot_username}?startgroup=true")],
         [InlineKeyboardButton("ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs", callback_data="help_menu")],
         [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("ᴄʜᴀɴɴᴇʟ ↗", url="https://t.me/rushbots")]
     ])
     await query.message.edit_caption(caption=caption_text, reply_markup=Buttons)
-  
+    
