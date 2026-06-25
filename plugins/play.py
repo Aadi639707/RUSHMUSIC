@@ -8,7 +8,7 @@ import pyDes
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pytgcalls.types import MediaStream
-from core import call, music_queue
+from core import call, music_queue, app
 
 os.makedirs("downloads", exist_ok=True)
 
@@ -35,6 +35,17 @@ async def play_command(client: Client, message: Message):
     if len(message.command) < 2: return await message.reply_text("ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴍᴇ ᴀ sᴏɴɢ ɴᴀᴍᴇ.")
     
     chat_id = message.chat.id
+    
+    # 🤖 Auto VC Management Logic
+    try:
+        await client.get_call(chat_id)
+    except:
+        try:
+            await client.set_group_call_title(chat_id, "🎵 Spotify Music Player")
+            await client.create_group_call(chat_id)
+        except Exception as e:
+            return await message.reply_text("⚠️ VC start karne ke liye mujhe 'Manage Voice Chats' ki permission do!")
+
     query = message.text.split(None, 1)[1]
     processing_msg = await message.reply_text("sᴇᴀʀᴄʜɪɴɢ ᴅɪʀᴇᴄᴛʟʏ ᴏɴ ᴊɪᴏsᴀᴀᴠɴ...")
 
@@ -108,4 +119,4 @@ async def play_command(client: Client, message: Message):
 
     except Exception as e:
         await processing_msg.edit_text(f"ᴇʀʀᴏʀ: {str(e)[:100]}")
-              
+        
