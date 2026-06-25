@@ -39,11 +39,11 @@ async def play_next_system(chat_id, is_auto=False):
             except: pass
         
         bot_username = app.me.username
-        play_text = f"⏭ <b>sᴋɪᴘᴘᴇᴅ ᴛᴏ ɴᴇxᴛ ᴛʀᴀᴄᴋ</b>\n\nᴛɪᴛʟᴇ : {next_song['title']}\nᴅᴜʀᴀᴛɪᴏɴ : {next_song['duration']} sᴇᴄᴏɴᴅs\nʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {next_song['requester']}"
+        play_text = f"⏭ **Skipped to Next Track**\n\n**Title:** {next_song['title']}\n**Duration:** {next_song['duration']} Seconds\n**Requested By:** {next_song['requester']}"
         play_buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("▷", callback_data="resume"), InlineKeyboardButton("II", callback_data="pause"), InlineKeyboardButton("⏭", callback_data="skip"), InlineKeyboardButton("⏹", callback_data="stop")],
-            [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("sᴜᴘ force_stop ↗", url="https://t.me/rushbots")],
-            [InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ +", url=f"https://t.me/{bot_username}?startgroup=true")]
+            [InlineKeyboardButton("Developer", url="https://t.me/rushdeveloper"), InlineKeyboardButton("Support", url="https://t.me/rushbots")],
+            [InlineKeyboardButton("+ Add Me To Your Group +", url=f"https://t.me/{bot_username}?startgroup=true")]
         ])
         await app.send_photo(chat_id, photo=next_song['thumbnail'], caption=play_text, reply_markup=play_buttons)
     except: await play_next_system(chat_id, is_auto=True)
@@ -65,7 +65,7 @@ async def global_update_handler(client, update: Update):
 
 async def process_action(client, chat_id, action, user_id, query=None, message=None):
     if not await is_admin(client, chat_id, user_id):
-        err_msg = "ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴍᴅ."
+        err_msg = "⚠️ Only admins can use this command."
         if query: return await query.answer(err_msg, show_alert=True)
         if message: return await message.reply_text(err_msg)
 
@@ -76,23 +76,23 @@ async def process_action(client, chat_id, action, user_id, query=None, message=N
         if query: 
             try: await query.message.delete()
             except: pass
-            return await query.answer("Stopped!")
-        if message: return await message.reply_text("sᴛʀᴇᴀᴍ ᴇɴᴅᴇᴅ & ʟᴇғᴛ ᴠᴄ.")
+            return await query.answer("Stream Stopped!")
+        if message: return await message.reply_text("⏹ Stream ended and left the Voice Chat.")
 
     if chat_id not in music_queue or len(music_queue[chat_id]) == 0:
-        if query: return await query.answer("Nothing playing!", show_alert=True)
-        if message: return await message.reply_text("ɴᴏᴛʜɪɴɢ ɪs ᴘʟᴀʏɪɴɢ.")
+        if query: return await query.answer("Nothing is playing right now!", show_alert=True)
+        if message: return await message.reply_text("⚠️ Nothing is playing right now.")
 
     try:
         if action == "pause":
             await call.pause(chat_id)
-            if query: await query.answer("Paused!")
+            if query: await query.answer("Stream Paused!")
         elif action == "resume":
             await call.resume(chat_id)
-            if query: await query.answer("Resumed!")
+            if query: await query.answer("Stream Resumed!")
         elif action == "skip":
             if len(music_queue[chat_id]) > 1:
-                if query: await query.answer("Skipping...")
+                if query: await query.answer("Skipping to next track...")
                 if query:
                     try: await query.message.delete()
                     except: pass
@@ -104,7 +104,7 @@ async def process_action(client, chat_id, action, user_id, query=None, message=N
                 if query: 
                     try: await query.message.delete()
                     except: pass
-                    await query.answer("Queue empty!")
+                    await query.answer("Queue is empty! Stream stopped.")
     except Exception as e:
         if query: await query.answer(f"Error: {str(e)[:40]}", show_alert=True)
 
@@ -117,28 +117,4 @@ async def text_route(client: Client, message: Message):
     action = message.command[0].lower().split("@")[0]
     user_id = message.from_user.id if message.from_user else message.sender_chat.id
     await process_action(client, message.chat.id, action, user_id, message=message)
-
-@Client.on_callback_query(filters.regex("^help_menu$"))
-async def help_menu_handler(client: Client, query: CallbackQuery):
-    bot_name = client.me.first_name
-    help_text = f"˹ {bot_name} ˼ ♪ ʜᴇʟᴘ ᴍᴇɴᴜ\n\n➻ /play [sᴏɴɢ] - ᴘʟᴀʏ ᴀ sᴏɴɢ\n➻ /skip - sᴋɪᴘ ᴛʀᴀᴄᴋ\n➻ /pause - ᴘᴀᴜsᴇ\n➻ /resume - ʀᴇsᴜᴍᴇ\n➻ /end ᴏʀ /stop - ᴇɴᴅ sᴛʀᴇᴀᴍ & ʟᴇᴀᴠᴇ ᴠᴄ"
-    back_button = InlineKeyboardMarkup([[InlineKeyboardButton("◁ ʙᴀᴄᴋ", callback_data="close_help")]])
-    await query.message.edit_caption(caption=help_text, reply_markup=back_button)
-
-@Client.on_callback_query(filters.regex("^close_help$"))
-async def close_help_handler(client: Client, query: CallbackQuery):
-    bot_name = client.me.first_name
-    bot_username = client.me.username
-    caption_text = (
-        f"ʜᴇʏ {query.from_user.mention} , 🥀\n\n"
-        f"⊙ ᴛʜɪs ɪs ˹ {bot_name} ˼ !\n\n"
-        f"➻ ᴀ ғᴀsᴛ & ᴘᴏᴡᴇʀғᴜʟ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ᴡɪᴛʜ sᴏᴍᴇ ᴀᴡᴇsᴏᴍᴇ ғᴇᴀᴛᴜʀᴇs.\n\n"
-        f"⊙ ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴ ᴛᴏ ɢᴇᴛ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ᴀʙᴏᴜᴛ ᴍʏ ᴍᴏᴅᴜʟᴇs ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅs."
-    )
-    Buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ⁺", url=f"https://t.me/{bot_username}?startgroup=true")],
-        [InlineKeyboardButton("ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs", callback_data="help_menu")],
-        [InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ↗", url="https://t.me/rushdeveloper"), InlineKeyboardButton("ᴄʜᴀɴɴᴇʟ ↗", url="https://t.me/rushbots")]
-    ])
-    await query.message.edit_caption(caption=caption_text, reply_markup=Buttons)
     
